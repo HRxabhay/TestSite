@@ -27,7 +27,7 @@
         border: 1px solid #ccc;
         border-radius: 3px;
       }
-      #tweet-form button {
+      #tweet-form button, .retweet-button {
         background-color: #1da1f2;
         color: #fff;
         border: none;
@@ -35,6 +35,12 @@
         padding: 8px 16px;
         font-size: 16px;
         cursor: pointer;
+      }
+      #tweet-form button:hover, .retweet-button:hover {
+        background-color: #0e8aef;
+      }
+      #tweet-form button:active, .retweet-button:active {
+        background-color: #0c7cd5;
       }
       #tweet-list {
         background-color: #fff;
@@ -48,10 +54,22 @@
         padding: 10px;
         margin-bottom: 10px;
         list-style: none;
+        position: relative;
       }
       #tweet-list img {
         max-width: 100%;
         margin-bottom: 10px;
+      }
+      .tweet-nickname {
+        font-weight: bold;
+        margin-right: 5px;
+      }
+      .tweet-retweets {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 14px;
+        color: #999;
       }
     </style>
   </head>
@@ -78,46 +96,65 @@
       </div>
     </div>
     <script>
-      const loginForm = document.querySelector('#login-form');
-      const tweetForm = document.querySelector('#tweet-form');
-      const tweetList = document.querySelector('#tweet-list');
-      const nicknameInput = document.querySelector('input[name="nickname"]');
-      const tweetTextInput = document.querySelector('textarea[name="tweet-text"]');
-      const tweetImageInput = document.querySelector('input[name="tweet-image"]');
-      let nickname;
+    const loginForm = document.querySelector('#login-form');
+const tweetForm = document.querySelector('#tweet-form');
+const tweetList = document.querySelector('#tweet-list');
+const nicknameInput = document.querySelector('input[name="nickname"]');
+const tweetTextInput = document.querySelector('textarea[name="tweet-text"]');
+const tweetImageInput = document.querySelector('input[name="tweet-image"]');
+let nickname;
 
-      loginForm.addEventListener('submit', e => {
-        e.preventDefault();
-        nickname = nicknameInput.value.trim();
-        loginForm.style.display = 'none';
-        tweetForm.style.display = 'block';
-        tweetList.style.display = 'block';
-      });
+loginForm.addEventListener('submit', e => {
+  e.preventDefault();
+  nickname = nicknameInput.value.trim();
+  loginForm.style.display = 'none';
+  tweetForm.style.display = 'block';
+  tweetList.style.display = 'block';
+});
 
-      tweetForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const tweetText = tweetTextInput.value.trim();
-        if (!tweetText) return; // If tweet text is empty, do nothing
-    const tweet = document.createElement('li');
-    const tweetNickname = document.createElement('span');
-    const tweetTextElement = document.createElement('p');
-    tweetNickname.innerText = nickname;
-    tweetTextElement.innerText = tweetText;
-    tweet.appendChild(tweetNickname);
-    tweet.appendChild(tweetTextElement);
+tweetForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const tweetText = tweetTextInput.value.trim();
+  if (!tweetText) return; // If tweet text is empty, do nothing
 
-    if (tweetImageInput.files && tweetImageInput.files[0]) {
-      const tweetImage = document.createElement('img');
-      const reader = new FileReader();
-      reader.onload = e => {
-        tweetImage.src = e.target.result;
-      };
-      reader.readAsDataURL(tweetImageInput.files[0]);
-      tweet.appendChild(tweetImage);
-    }
-
-    tweetList.querySelector('ul').prepend(tweet);
-    tweetTextInput.value = '';
-    tweetImageInput.value = '';
+  const tweet = document.createElement('li');
+  tweet.classList.add('tweet');
+  const tweetHeader = document.createElement('div');
+  tweetHeader.classList.add('tweet-header');
+  const tweetNickname = document.createElement('span');
+  tweetNickname.classList.add('tweet-nickname');
+  tweetNickname.innerText = nickname;
+  tweetHeader.appendChild(tweetNickname);
+  const tweetActions = document.createElement('div');
+  tweetActions.classList.add('tweet-actions');
+  const retweetButton = document.createElement('button');
+  retweetButton.classList.add('retweet-button');
+  retweetButton.innerHTML = '<i class="fas fa-retweet"></i>';
+  retweetButton.addEventListener('click', () => {
+    const clonedTweet = tweet.cloneNode(true);
+    tweetList.querySelector('ul').appendChild(clonedTweet);
   });
+  tweetActions.appendChild(retweetButton);
+  tweetHeader.appendChild(tweetActions);
+  tweet.appendChild(tweetHeader);
+  const tweetTextElement = document.createElement('p');
+  tweetTextElement.classList.add('tweet-text');
+  tweetTextElement.innerText = tweetText;
+  tweet.appendChild(tweetTextElement);
+
+  if (tweetImageInput.files && tweetImageInput.files[0]) {
+    const tweetImage = document.createElement('img');
+    tweetImage.classList.add('tweet-image');
+    const reader = new FileReader();
+    reader.onload = e => {
+      tweetImage.src = e.target.result;
+    };
+    reader.readAsDataURL(tweetImageInput.files[0]);
+    tweet.appendChild(tweetImage);
+  }
+
+  tweetList.querySelector('ul').prepend(tweet);
+  tweetTextInput.value = '';
+  tweetImageInput.value = '';
+});
 </script>
