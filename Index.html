@@ -1,2 +1,123 @@
-# TestSite
-Nothing much!! Coding yay
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Twitter Clone</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e6ecf0;
+      }
+      #container {
+        margin: 0 auto;
+        max-width: 600px;
+      }
+      #login-form, #tweet-form {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      #login-form input[type="text"], #tweet-form textarea {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      #tweet-form button {
+        background-color: #1da1f2;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #tweet-list {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+      }
+      #tweet-list li {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        list-style: none;
+      }
+      #tweet-list img {
+        max-width: 100%;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Twitter Clone</h1>
+      <form id="login-form">
+        <label for="nickname">Nickname:</label>
+        <input type="text" name="nickname" required>
+        <button type="submit">Login</button>
+      </form>
+      <form id="tweet-form" style="display: none;">
+        <label for="tweet-text">What's happening?</label>
+        <textarea name="tweet-text" rows="3" required></textarea>
+        <label for="tweet-image">Add an image (optional):</label>
+        <input type="file" name="tweet-image" accept="image/*">
+        <button type="submit">Post</button>
+      </form>
+      <div id="tweet-list" style="display: none;">
+        <h2>Tweets</h2>
+        <ul>
+          <!-- Each tweet will be added as a list item here -->
+        </ul>
+      </div>
+    </div>
+    <script>
+      const loginForm = document.querySelector('#login-form');
+      const tweetForm = document.querySelector('#tweet-form');
+      const tweetList = document.querySelector('#tweet-list');
+      const nicknameInput = document.querySelector('input[name="nickname"]');
+      const tweetTextInput = document.querySelector('textarea[name="tweet-text"]');
+      const tweetImageInput = document.querySelector('input[name="tweet-image"]');
+      let nickname;
+
+      loginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        nickname = nicknameInput.value.trim();
+        loginForm.style.display = 'none';
+        tweetForm.style.display = 'block';
+        tweetList.style.display = 'block';
+      });
+
+      tweetForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const tweetText = tweetTextInput.value.trim();
+        if (!tweetText) return; // If tweet text is empty, do nothing
+    const tweet = document.createElement('li');
+    const tweetNickname = document.createElement('span');
+    const tweetTextElement = document.createElement('p');
+    tweetNickname.innerText = nickname;
+    tweetTextElement.innerText = tweetText;
+    tweet.appendChild(tweetNickname);
+    tweet.appendChild(tweetTextElement);
+
+    if (tweetImageInput.files && tweetImageInput.files[0]) {
+      const tweetImage = document.createElement('img');
+      const reader = new FileReader();
+      reader.onload = e => {
+        tweetImage.src = e.target.result;
+      };
+      reader.readAsDataURL(tweetImageInput.files[0]);
+      tweet.appendChild(tweetImage);
+    }
+
+    tweetList.querySelector('ul').prepend(tweet);
+    tweetTextInput.value = '';
+    tweetImageInput.value = '';
+  });
+</script>
